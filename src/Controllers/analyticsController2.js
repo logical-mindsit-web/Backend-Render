@@ -103,7 +103,7 @@ export const saveRobotAnalytics2 = async (req, res) => {
 export const getRobotAnalyticsByRobotId = async (req, res) => {
   try {
     // Extract robotId from query params or request body
-    const { robotId } = req.params;
+    const { robotId } = req.query;
 
     // Check if robotId is provided
     if (!robotId) {

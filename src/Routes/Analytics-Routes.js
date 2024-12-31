@@ -13,7 +13,7 @@ router.post('/robotanalytics', saveRobotAnalytics);
 router.post('/robotanalytics2', saveRobotAnalytics2);
 
 // get robot analytics2 (for test purpose)
-router.get("/analytics/:robotId", getRobotAnalyticsByRobotId);
+router.get("/analytics2", getRobotAnalyticsByRobotId);
 
 export default router;
 
