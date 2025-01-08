@@ -1,6 +1,7 @@
 import Robot from "../Models/Robot-Model.js";
 
 //get user Robots
+
 export const getRobotsByEmail = async (req, res) => {
   try {
     const { email, role } = req.user; // Assuming email and role are extracted from the verified token
@@ -9,14 +10,18 @@ export const getRobotsByEmail = async (req, res) => {
     let robots;
 
     if (role === "user") {
-      // Fetch robots for a specific user based on their email
-      robots = await Robot.find({ emailId: email }).exec();
+      // Fetch robots for a specific user based on their email and include user ID
+      robots = await Robot.find({ emailId: email })
+        .populate("userId", "_id name email") // Adjust fields based on your User schema
+        .exec();
     } else if (["Hr", "AdminController", "ProjectManage"].includes(role)) {
       // Require query email to fetch robots for privileged roles
       if (!queryEmail) {
         return res.status(400).json({ message: "Query parameter 'email' is required" });
       }
-      robots = await Robot.find({ emailId: queryEmail }).exec();
+      robots = await Robot.find({ emailId: queryEmail })
+        .populate("userId", "_id name email")
+        .exec();
     } else {
       return res.status(403).json({ message: "Access denied" });
     }
@@ -27,6 +32,6 @@ export const getRobotsByEmail = async (req, res) => {
 
     return res.json(robots);
   } catch (error) {
-    return res.status(500).json({ error: error.message });
-  }
+    return res.status(500).json({ error: error.message });
+  }
 };
