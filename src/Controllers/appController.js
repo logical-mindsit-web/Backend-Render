@@ -1,6 +1,6 @@
-import Version from '../Models/Version-Model.js';
-import User from '../Models/User-Model.js';
-import Admin from '../Models/Admin-Model.js'; 
+import Version from "../Models/Version-Model.js";
+import User from "../Models/User-Model.js";
+import Admin from "../Models/Admin-Model.js";
 
 // Controller to get version and user/admin details based on email
 export const getVersionAndUserByEmail = async (req, res) => {
@@ -13,28 +13,36 @@ export const getVersionAndUserByEmail = async (req, res) => {
     let details;
 
     // Query the appropriate model based on the role
-    if (role === 'user') {
-      const user = await User.findOne({ email }, 'email manualMapping objectDisinfection');
+    if (role === "user") {
+      const user = await User.findOne(
+        { email },
+        "_id email manualMapping objectDisinfection"
+      );
       if (!user) {
-        return res.status(404).json({ error: 'User not found' });
+        return res.status(404).json({ error: "User not found" });
       }
       details = {
+        id: user._id,
         email: user.email,
         manualMapping: user.manualMapping,
         objectDisinfection: user.objectDisinfection,
       };
-    } else if (role === "Hr", "ProjectManager", "AdminController") {
-      const admin = await Admin.findOne({ email }, 'email role manualMapping objectDisinfection');
+    } else if ((role === "Hr", "ProjectManager", "AdminController")) {
+      const admin = await Admin.findOne(
+        { email },
+        "_id email role manualMapping objectDisinfection"
+      );
       if (!admin) {
-        return res.status(404).json({ error: 'Admin not found' });
+        return res.status(404).json({ error: "Admin not found" });
       }
       details = {
+        id: admin._id,
         email: admin.email,
         manualMapping: admin.manualMapping,
         objectDisinfection: admin.objectDisinfection,
       };
     } else {
-      return res.status(400).json({ error: 'Invalid role provided in token' });
+      return res.status(400).json({ error: "Invalid role provided in token" });
     }
 
     // Construct the response data
@@ -46,7 +54,7 @@ export const getVersionAndUserByEmail = async (req, res) => {
 
     res.status(200).json(responseData);
   } catch (error) {
-    console.error('Error fetching version and details:', error);
-    res.status(500).json({ error: 'Server error' });
+    console.error("Error fetching version and details:", error);
+    res.status(500).json({ error: "Server error" });
   }
 };
