@@ -1,4 +1,4 @@
-import OneModeModel from "../Models/History-Model.js";
+import OneModeModel from "../Models/Livedata-Model.js";
 
 const modeConfig = {
   INITIALIZATION_MODE: {

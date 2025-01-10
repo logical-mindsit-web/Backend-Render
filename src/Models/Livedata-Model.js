@@ -38,7 +38,7 @@ const oneModeSchema = new Schema({
   discriminatorKey: 'mode',
 });
 
-const OneModeModel = model("History", oneModeSchema);
+const OneModeModel = model("Livedata", oneModeSchema);
 
 
 export const InitializationMode = OneModeModel.discriminator("Initialization", new Schema({

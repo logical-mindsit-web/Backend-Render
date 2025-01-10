@@ -9,7 +9,7 @@ import analytics from "./src/Routes/Analytics-Routes.js"
 import metadata from "./src/Routes/App-Routes.js";
 import authRoutes from './src/Routes/Auth-Routes.js';
 import emergencymsg from "./src/Routes/Emergencymsg-Routes.js"
-import history from "./src/Routes/History-Routes.js"
+import livedata from "./src/Routes/Livedata-Routes.js"
 import mappost from "./src/Routes/Map-Routes.js"
 import profileRoutes from './src/Routes/Profile-Routes.js';
 import robotRoutes from './src/Routes/Robot-Routes.js';
@@ -33,7 +33,7 @@ app.use('/', analytics);
 app.use('/', metadata);
 app.use('/', authRoutes);
 app.use('/', emergencymsg);
-app.use('/modes', history);
+app.use('/modes', livedata);
 app.use('/', mappost);
 app.use('/', profileRoutes);
 app.use('/', robotRoutes);
