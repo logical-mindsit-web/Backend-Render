@@ -2,12 +2,13 @@ import Robotmsg from "../Models/Emergencymsg-Model.js";
 import { robotemail } from "../utils/emergencymsgmail.js";
 
 // Create a new robot message entry
+// Create a new robot message entry
 export const createRobotmsg = async (req, res) => {
   try {
-    const { robotId, emailId, message, camera_images } = req.body;
+    const { robotId, emailId, message, camera_images, ErrorCode, Fault, FaultDetails, MapName } = req.body;
 
     // Validate required fields
-    if (!robotId || !emailId || !message || !camera_images ) {
+    if (!robotId || !emailId || !message || !camera_images || !ErrorCode) {
       return res.status(400).json({
         success: false,
         message: "All required fields must be provided.",
@@ -21,12 +22,33 @@ export const createRobotmsg = async (req, res) => {
       });
     }
 
-    // Create a new robot message entry
+    // Check conditions for ErrorCode
+    if (ErrorCode === 'Layoutchanged' && !MapName) {
+      return res.status(400).json({
+        success: false,
+        message: "MapName must be provided for ErrorCode 'Layoutchanged'.",
+      });
+    }
+
+    if (ErrorCode === 'Faultoccurance') {
+      if (!Fault || !FaultDetails) {
+        return res.status(400).json({
+          success: false,
+          message: "Fault and FaultDetails must be provided for ErrorCode 'Faultoccurance'.",
+        });
+      }
+    }
+
+    // Create a new robot message entry with all necessary fields
     const newRobotmsg = new Robotmsg({
       robotId,
       emailId,
       message,
       camera_images, // Save array of images
+      ErrorCode,
+      Fault,
+      FaultDetails,
+      MapName,
     });
 
     // Save the robot message entry to the database
@@ -34,7 +56,7 @@ export const createRobotmsg = async (req, res) => {
 
     // Send email with the robot message details and image attachment
     await robotemail(
-    "logicalmindsit.careers@gmail.com",
+      "logicalmindsit.careers@gmail.com",
       robotId,
       emailId,
       message,
