@@ -15,6 +15,7 @@ import profileRoutes from './src/Routes/Profile-Routes.js';
 import robotRoutes from './src/Routes/Robot-Routes.js';
 import swap from "./src/Routes/Swap-Routes.js";
 import disinfectionTime from "./src/Routes/DisinfectionTime-Routes.js"
+import resultAndMapImage from "./src/Routes/resultAndMapImageRoutes.js"
 
 import bodyParser from "body-parser";
 
@@ -40,6 +41,7 @@ app.use('/', profileRoutes);
 app.use('/', robotRoutes);
 app.use('/', swap);
 app.use('/', disinfectionTime);
+app.use('/', resultAndMapImage);
 
 app.listen(PORT, async () => {
   await connectDB();
