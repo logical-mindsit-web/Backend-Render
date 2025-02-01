@@ -124,55 +124,60 @@ export const getDisinfectionRecordsByDateTime = async (req, res) => {
 };
 
 
-// GET API to fetch disinfection records within a time range
-// export const getDisinfectionRecords = async (req, res) => {
-//   try {
-//     const {  startTime, endTime } = req.query;
+//GET API to fetch disinfection records within a time range
+export const getDisinfectionRecordsInTimeRange = async (req, res) => {
+  try {
+    const {  startTime, endTime } = req.query;
 
-//     // Validate required parameters
-//     if ( !startTime || !endTime) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "Missing required parameters:  startTime, endTime.",
-//       });
-//     }
+    // Validate required parameters
+    if ( !startTime || !endTime) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required parameters:  startTime, endTime.",
+      });
+    }
 
-//     // Parse dates from ISO strings
-//     const startDate = new Date(startTime);
-//     const endDate = new Date(endTime);
+    // Parse dates from ISO strings
+    const startDate = new Date(startTime);
+    const endDate = new Date(endTime);
 
-//     // Check if dates are valid
-//     if (isNaN(startDate) || isNaN(endDate)) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "Invalid date format. Use ISO strings (e.g., '2024-05-20T06:00:00Z').",
-//       });
-//     }
+    // Check if dates are valid
+    if (isNaN(startDate) || isNaN(endDate)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid date format. Use ISO strings (e.g., '2024-05-20T06:00:00Z').",
+      });
+    }
 
-//     // Ensure startTime <= endTime
-//     if (startDate > endDate) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "startTime must be before or equal to endTime.",
-//       });
-//     }
+    // Ensure startTime <= endTime
+    if (startDate > endDate) {
+      return res.status(400).json({
+        success: false,
+        message: "startTime must be before or equal to endTime.",
+      });
+    }
 
-//     // Fetch records from MongoDB
-//     const records = await resultAndMapImageStore.find({
-//       disinfectionTime: { $gte: startDate, $lte: endDate },
-//     });
-
-//     return res.status(200).json({
-//       success: true,
-//       message: "Disinfection records retrieved successfully.",
-//       data: records,
-//     });
-//   } catch (error) {
-//     console.error("Error fetching disinfection records:", error);
-//     return res.status(500).json({
-//       success: false,
-//       message: "Internal server error.",
-//       error: error.message,
-//     });
-//   }
-// };
+    // Fetch records from MongoDB
+    const records = await resultAndMapImageStore.find({
+      disinfectionTime: { $gte: startDate, $lte: endDate },
+    });
+    if (records.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No disinfection records found for the specified time range.",
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      message: "Disinfection records retrieved successfully.",
+      data: records,
+    });
+  } catch (error) {
+    console.error("Error fetching disinfection records:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error.",
+      error: error.message,
+    });
+  }
+};
