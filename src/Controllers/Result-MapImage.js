@@ -125,31 +125,89 @@ export const getDisinfectionRecordsByDateTime = async (req, res) => {
 
 
 //GET API to fetch disinfection records within a time range
+// export const getDisinfectionRecordsInTimeRange = async (req, res) => {
+//   try {
+//     const {  startTime, endTime } = req.query;
+
+//     // Validate required parameters
+//     if ( !startTime || !endTime) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Missing required parameters:  startTime, endTime.",
+//       });
+//     }
+
+//     // Parse dates from ISO strings
+//     const startDate = new Date(startTime);
+//     const endDate = new Date(endTime);
+
+//     // Check if dates are valid
+//     if (isNaN(startDate) || isNaN(endDate)) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Invalid date format. Use ISO strings (e.g., '2024-05-20T06:00:00Z').",
+//       });
+//     }
+
+//     // Ensure startTime <= endTime
+//     if (startDate > endDate) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "startTime must be before or equal to endTime.",
+//       });
+//     }
+
+//     // Fetch records from MongoDB
+//     const records = await resultAndMapImageStore.find({
+//       disinfectionTime: { $gte: startDate, $lte: endDate },
+//     });
+//     if (records.length === 0) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "No disinfection records found for the specified time range.",
+//       });
+//     }
+//     return res.status(200).json({
+//       success: true,
+//       message: "Disinfection records retrieved successfully.",
+//       data: records,
+//     });
+//   } catch (error) {
+//     console.error("Error fetching disinfection records:", error);
+//     return res.status(500).json({
+//       success: false,
+//       message: "Internal server error.",
+//       error: error.message,
+//     });
+//   }
+// };
 export const getDisinfectionRecordsInTimeRange = async (req, res) => {
   try {
-    const {  startTime, endTime } = req.query;
+    const { startTime, endTime, robotId } = req.query;
 
     // Validate required parameters
-    if ( !startTime || !endTime) {
+    const missingFields = ["startTime", "endTime", "robotId"].filter(field => !req.query[field]);
+    if (missingFields.length > 0) {
       return res.status(400).json({
         success: false,
-        message: "Missing required parameters:  startTime, endTime.",
+        message: "Missing required parameters.",
+        missingFields,
       });
     }
 
-    // Parse dates from ISO strings
+    // Convert to Date objects
     const startDate = new Date(startTime);
     const endDate = new Date(endTime);
 
-    // Check if dates are valid
-    if (isNaN(startDate) || isNaN(endDate)) {
+    // Validate date format
+    if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
       return res.status(400).json({
         success: false,
         message: "Invalid date format. Use ISO strings (e.g., '2024-05-20T06:00:00Z').",
       });
     }
 
-    // Ensure startTime <= endTime
+    // Ensure startTime is not greater than endTime
     if (startDate > endDate) {
       return res.status(400).json({
         success: false,
@@ -157,19 +215,24 @@ export const getDisinfectionRecordsInTimeRange = async (req, res) => {
       });
     }
 
-    // Fetch records from MongoDB
-    const records = await resultAndMapImageStore.find({
-      disinfectionTime: { $gte: startDate, $lte: endDate },
-    });
-    if (records.length === 0) {
+    // Query database with optimized performance
+    const records = await resultAndMapImageStore.find(
+      {
+        disinfectionTime: { $gte: startDate, $lte: endDate },
+        robotId: robotId.trim(),
+      }
+    ).lean(); // Improves query performance by returning plain objects
+
+    if (!records.length) {
       return res.status(404).json({
         success: false,
         message: "No disinfection records found for the specified time range.",
       });
     }
+
     return res.status(200).json({
       success: true,
-      message: "Disinfection records retrieved successfully.",
+      message: "Disinfection results retrieved successfully.",
       data: records,
     });
   } catch (error) {
