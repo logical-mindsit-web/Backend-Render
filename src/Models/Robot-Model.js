@@ -23,6 +23,7 @@ const robotSchema = new Schema({
   lastMaintenanceDate: { type: Date, required: true },
   location: { type: String, required: true },
   subLocation: { type: String, required: true },
+  amps: { type: Number, required: true, default:"0" },
 }, { timestamps: true });
 
 const Robot = mongoose.model('Robot', robotSchema);

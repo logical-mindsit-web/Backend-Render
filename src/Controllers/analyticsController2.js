@@ -1,4 +1,5 @@
 import RobotAnalytics from "../Models/Analytics-Model2.js";
+import Robot from "../Models/Robot-Model.js"
 
 export const saveRobotAnalytics2 = async (req, res) => {
   try {
@@ -110,6 +111,12 @@ export const getRobotAnalyticsByRobotId = async (req, res) => {
       return res.status(400).json({ message: "robotId is required" });
     }
 
+    // Find the robot by robotId and fetch only the 'amps' field
+    const robot = await Robot.findOne({ robotId }).select("amps");
+
+    if (!robot) {
+      return res.status(404).json({ message: `No robot found for robotId: ${robotId}` });
+    }
     // Find all robot analytics records with the provided robotId
     const robotAnalyticsData = await RobotAnalytics.find({ robotId });
 
