@@ -111,12 +111,13 @@ export const getRobotAnalyticsByRobotId = async (req, res) => {
       return res.status(400).json({ message: "robotId is required" });
     }
 
-    // Find the robot by robotId and fetch only the 'amps' field
-    const robot = await Robot.findOne({ robotId }).select("amps");
+     // Find the robot by robotId and fetch only the 'amps' field
+     const robot = await Robot.findOne({ robotId }).select("amps");
 
-    if (!robot) {
-      return res.status(404).json({ message: `No robot found for robotId: ${robotId}` });
-    }
+     if (!robot) {
+       return res.status(404).json({ message: `No robot found for robotId: ${robotId}` });
+     }
+ 
     // Find all robot analytics records with the provided robotId
     const robotAnalyticsData = await RobotAnalytics.find({ robotId });
 
@@ -130,6 +131,7 @@ export const getRobotAnalyticsByRobotId = async (req, res) => {
     // Return the fetched data
     res.status(200).json({
       message: "Robot Analytics data fetched successfully",
+      amps: robot.amps,
       data: robotAnalyticsData,
     });
   } catch (error) {
